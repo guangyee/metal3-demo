@@ -17,3 +17,7 @@ directories_to_create:
 
 # DNS zone forwarders
 dns_zone_forwarders: []
+
+# Whether to use sylva bootrapping instead of relying on existing
+# Rancher RKE2 management cluster.
+use_sylva_bootstrap: false

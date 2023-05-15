@@ -43,6 +43,13 @@
     repo_pull_request: "{{ metal3_demo_pull_request | default('') }}"
   when: deploy_sylva_core
 
+- name: Install required python packages
+  become: yes
+  pip:
+    name: [yamllint]
+    state: latest
+  when: deploy_sylva_core or use_sylva_bootstrap
+
 - name: Create directories
   become: yes
   file:
@@ -85,7 +92,13 @@
   template:
     src: values.yaml.j2
     dest: ~/metal3-demo/sylva/environments/suse-rke2-capm3/values.yaml
-  when: deploy_sylva_core
+  when: deploy_sylva_core and not use_sylva_bootstrap
+
+- name: Create values.yaml for bootstrap Sylva environment
+  template:
+    src: bootstrap_values.yaml.j2
+    dest: ~/metal3-demo/sylva/environments/suse-rke2-capm3/values.yaml
+  when: use_sylva_bootstrap
 
 - name: Create workload_cluster_git_repo.yaml
   template:
@@ -101,7 +114,7 @@
   register: sylva_core_deploy_result
   retries: 3
   delay: 30 
-  when: deploy_sylva_core
+  when: deploy_sylva_core and not use_sylva_bootstrap
 
 - name: Copy Get Component Version Script
   copy:
